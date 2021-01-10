@@ -1,17 +1,48 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { createStore, combineReducers } from 'redux';
+import { connect, Provider } from 'react-redux';
+
+// Action Creators - You don't need to change these
+const increment = () => ({ type: 'increment' });
+const decrement = () => ({ type: 'decrement' });
+
+const Counter = (props) => { // added!
+    return (
+        <div>
+            <button onClick={props.increment} className="increment">Increment</button>
+            <button onClick={props.decrement} className="decrement">Decrement</button>
+            Current Count: <span>{props.count}</span> 
+        </div>
+    );
+};
+
+const mapStateToProps = state => { // added!
+    console.log(state);
+    return { count: state.count };
+};
+
+const WrappedCounter = connect(mapStateToProps, { increment, decrement })(Counter); // added!
+
+// Only change code *before* me!
+// -----------
+
+
+const store = createStore(combineReducers({
+    count: (count = 0, action) => {
+        if (action.type === 'increment') {
+            return count + 1;
+        } else if (action.type === 'decrement') {
+            return count - 1;
+        } else {
+            return count;
+        }
+    }
+}));
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+    <Provider store={store}>
+        <WrappedCounter />
+    </Provider>, 
+    document.querySelector('#root')
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
